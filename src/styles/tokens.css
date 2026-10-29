@@ -1,0 +1,57 @@
+:root {
+  --bg: #07070c;
+  --surface: #0f0f18;
+  --amber: #ff9d2e;
+  --neon-green: #39ff88;
+  --magenta: #ff2fd0;
+  --cyan: #2ee6ff;
+  --text: #d7d7e0;
+  --muted: #6b6b80;
+
+  /* мелкий вторичный текст: --muted даёт 3.9:1, для 12–14px нужно не меньше 4.5:1 */
+  --subtle: #9494ab;
+  --line: rgb(215 215 224 / 0.1);
+  --line-strong: rgb(215 215 224 / 0.18);
+
+  /* главный акцент; консольная команда `theme green` переключает его на зелёный */
+  --accent: var(--amber);
+  --accent-rgb: 255 157 46;
+
+  --font-pixel: 'Pixel', 'Courier New', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', 'Courier New', ui-monospace, monospace;
+
+  --container: 1280px;
+  --gutter: 16px;
+  --col-gap: 16px;
+  --section-pad: 96px;
+  --nav-h: 52px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+[data-theme='green'] {
+  --accent: var(--neon-green);
+  --accent-rgb: 57 255 136;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 32px;
+    --col-gap: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 48px;
+    --col-gap: 32px;
+    --section-pad: 140px;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --section-pad: 168px;
+  }
+}

@@ -1,0 +1,452 @@
+/* ---------- CRT: сканлайны + шум + виньетка одним слоем ---------- */
+
+.crt {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 130% 100% at 50% 50%, transparent 58%, rgb(0 0 0 / 0.55) 100%),
+    repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px),
+    url('/noise.png') 0 0 / 128px 128px;
+  opacity: 0.85;
+}
+
+/* ---------- WebGL-холст и CSS-фолбэк звёзд ---------- */
+
+.gl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s;
+}
+
+.gl-on .gl {
+  opacity: 1;
+}
+
+.gl-on .gl.is-idle {
+  opacity: 0;
+  transition-duration: 0.4s;
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgb(255 255 255 / 0.9), transparent),
+    radial-gradient(1px 1px at 68% 32%, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 38% 74%, rgb(255 157 46 / 0.9), transparent),
+    radial-gradient(1px 1px at 84% 82%, rgb(46 230 255 / 0.8), transparent),
+    radial-gradient(1px 1px at 52% 52%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(1px 1px at 24% 62%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 91% 12%, rgb(255 47 208 / 0.7), transparent),
+    radial-gradient(1px 1px at 6% 90%, rgb(255 255 255 / 0.6), transparent);
+  background-size:
+    220px 220px,
+    310px 310px,
+    420px 420px,
+    270px 270px,
+    150px 150px,
+    190px 190px,
+    520px 520px,
+    240px 240px;
+  opacity: 0.75;
+  transition: opacity 1s;
+}
+
+.gl-on .stars {
+  opacity: 0;
+}
+
+.gl-maybe .eye-fallback {
+  display: none;
+}
+
+.no-gl .eye-fallback {
+  display: block;
+}
+
+/* ---------- глитч: два псевдо-слоя, живут только во время вспышки ---------- */
+
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  white-space: pre-line;
+  pointer-events: none;
+  opacity: 0;
+  text-shadow: none;
+}
+
+.glitch::before {
+  color: var(--magenta);
+}
+
+.glitch::after {
+  color: var(--cyan);
+}
+
+.glitch.is-glitching::before {
+  opacity: 0.85;
+  animation: glitch-a var(--glitch-dur, 0.2s) steps(1) both;
+}
+
+.glitch.is-glitching::after {
+  opacity: 0.85;
+  animation: glitch-b var(--glitch-dur, 0.2s) steps(1) both;
+}
+
+.glitch.is-glitching > .scr,
+.glitch.is-glitching > .line {
+  animation: glitch-main var(--glitch-dur, 0.2s) steps(1) both;
+}
+
+@keyframes glitch-a {
+  0% {
+    clip-path: inset(8% 0 62% 0);
+    transform: translate(-0.06em, 0.02em);
+  }
+  25% {
+    clip-path: inset(48% 0 28% 0);
+    transform: translate(0.05em, -0.02em);
+  }
+  50% {
+    clip-path: inset(72% 0 6% 0);
+    transform: translate(-0.04em, 0);
+  }
+  75% {
+    clip-path: inset(22% 0 52% 0);
+    transform: translate(0.07em, 0.01em);
+  }
+  100% {
+    clip-path: inset(40% 0 40% 0);
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes glitch-b {
+  0% {
+    clip-path: inset(58% 0 18% 0);
+    transform: translate(0.06em, -0.01em);
+  }
+  25% {
+    clip-path: inset(12% 0 70% 0);
+    transform: translate(-0.05em, 0.02em);
+  }
+  50% {
+    clip-path: inset(34% 0 44% 0);
+    transform: translate(0.08em, 0);
+  }
+  75% {
+    clip-path: inset(80% 0 4% 0);
+    transform: translate(-0.03em, -0.02em);
+  }
+  100% {
+    clip-path: inset(40% 0 40% 0);
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes glitch-main {
+  0%,
+  50% {
+    transform: translate(0.02em, 0);
+  }
+  25%,
+  75% {
+    transform: translate(-0.02em, 0);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.glitch > .scr,
+.glitch > .line {
+  display: inline-block;
+}
+
+/* ---------- скрамбл: настоящий символ держит ширину, поверх — случайный ---------- */
+
+.scr {
+  white-space: pre-wrap;
+}
+
+.scr .w {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.scr .c {
+  position: relative;
+  display: inline-block;
+}
+
+.scr .c[data-s] {
+  color: transparent;
+}
+
+.scr .c[data-s]::after {
+  content: attr(data-s);
+  position: absolute;
+  inset: 0;
+  color: var(--accent);
+  text-align: center;
+  opacity: 0.85;
+}
+
+/* ---------- печать текста ---------- */
+
+.typed__rest {
+  color: transparent;
+}
+
+.typed__cursor {
+  position: relative;
+  display: inline-block;
+  width: 0;
+}
+
+.typed__cursor::after {
+  content: '';
+  position: absolute;
+  bottom: -0.2em;
+  left: 1px;
+  width: 0.6em;
+  height: 1.2em;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgb(var(--accent-rgb) / 0.6);
+  animation: blink 1.06s steps(1) infinite;
+}
+
+/* ---------- интро: включение CRT-монитора ---------- */
+
+.intro {
+  display: none;
+}
+
+html.intro .intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  /* если скрипт не загрузился, интро не держит страницу */
+  animation: intro-failsafe 0.01s 6s forwards;
+}
+
+@keyframes intro-failsafe {
+  to {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+.intro__shutter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.5%;
+  background: #040407;
+}
+
+.intro__shutter--top {
+  top: 0;
+}
+
+.intro__shutter--bottom {
+  bottom: 0;
+}
+
+.intro__screen {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  width: 100%;
+  padding-inline: 16px;
+}
+
+.intro__boot {
+  color: var(--subtle);
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.intro__name {
+  color: var(--accent);
+  font: 400 clamp(52px, 13vw, 168px) / 1 var(--font-pixel);
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 0 0.3em rgb(var(--accent-rgb) / 0.5),
+    0 0 2px rgb(var(--accent-rgb) / 0.8);
+}
+
+.intro__line {
+  width: min(560px, 80vw);
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 14px rgb(var(--accent-rgb) / 0.8);
+  transform: scaleX(0);
+}
+
+.intro__flash {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 2px;
+  margin-top: -1px;
+  background: #fff;
+  box-shadow:
+    0 0 24px 6px rgb(255 255 255 / 0.6),
+    0 0 60px 12px rgb(var(--accent-rgb) / 0.5);
+  opacity: 0;
+}
+
+.intro__skip {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ---------- прицел вместо курсора (только мышь) ---------- */
+
+.reticle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  pointer-events: none;
+  display: none;
+}
+
+.has-reticle .reticle {
+  display: block;
+}
+
+.reticle__ring,
+.reticle__dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.reticle.is-visible .reticle__ring,
+.reticle.is-visible .reticle__dot {
+  opacity: 1;
+}
+
+.reticle__dot {
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgb(var(--accent-rgb) / 0.9);
+}
+
+.reticle__ring {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+}
+
+.reticle__ring::before,
+.reticle__ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transition:
+    transform 0.35s var(--ease-out),
+    opacity 0.25s;
+}
+
+/* прицел: кольцо с четырьмя рисками */
+.reticle__ring::before {
+  border: 1px solid rgb(var(--accent-rgb) / 0.75);
+  border-radius: 50%;
+  -webkit-mask: conic-gradient(#000 0 10%, transparent 0 15%, #000 0 35%, transparent 0 40%, #000 0 60%, transparent 0 65%, #000 0 85%, transparent 0 90%, #000 0);
+  mask: conic-gradient(#000 0 10%, transparent 0 15%, #000 0 35%, transparent 0 40%, #000 0 60%, transparent 0 65%, #000 0 85%, transparent 0 90%, #000 0);
+}
+
+/* захват цели: зелёные скобки */
+.reticle__ring::after {
+  inset: -6px;
+  background:
+    linear-gradient(var(--neon-green), var(--neon-green)) 0 0 / 10px 1px,
+    linear-gradient(var(--neon-green), var(--neon-green)) 0 0 / 1px 10px,
+    linear-gradient(var(--neon-green), var(--neon-green)) 100% 0 / 10px 1px,
+    linear-gradient(var(--neon-green), var(--neon-green)) 100% 0 / 1px 10px,
+    linear-gradient(var(--neon-green), var(--neon-green)) 0 100% / 10px 1px,
+    linear-gradient(var(--neon-green), var(--neon-green)) 0 100% / 1px 10px,
+    linear-gradient(var(--neon-green), var(--neon-green)) 100% 100% / 10px 1px,
+    linear-gradient(var(--neon-green), var(--neon-green)) 100% 100% / 1px 10px;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: scale(1.4) rotate(45deg);
+}
+
+.reticle.is-locked .reticle__ring::before {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.reticle.is-locked .reticle__ring::after {
+  opacity: 1;
+  transform: none;
+}
+
+.reticle.is-down .reticle__ring::before {
+  transform: scale(0.75);
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    display: none;
+  }
+
+  .caret,
+  .typed__cursor::after {
+    animation: none !important;
+  }
+}

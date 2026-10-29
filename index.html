@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!--head-->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/fonts/silkscreen-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      // Флаги до первой отрисовки: интро раз за сессию, тема, вероятная поддержка WebGL.
+      (function () {
+        var d = document.documentElement, rm = false
+        d.classList.add('js')
+        try { rm = matchMedia('(prefers-reduced-motion: reduce)').matches } catch (e) {}
+        if (rm) d.classList.add('rm')
+        try {
+          if (!rm && !sessionStorage.getItem('intro-seen') && !/[?&]nointro\b/.test(location.search)) d.classList.add('intro')
+          if (localStorage.getItem('theme') === 'green') d.setAttribute('data-theme', 'green')
+        } catch (e) {}
+        if ('WebGLRenderingContext' in window) d.classList.add('gl-maybe')
+        if (d.classList.contains('intro') && 'scrollRestoration' in history) history.scrollRestoration = 'manual'
+      })()
+    </script>
+    <link rel="stylesheet" href="/src/styles/index.css">
+  </head>
+  <body>
+    <!--app-->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
