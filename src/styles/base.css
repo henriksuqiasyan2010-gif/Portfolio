@@ -203,6 +203,11 @@ main,
 
 .section {
   padding-block: var(--section-pad);
+  scroll-margin-top: calc(var(--nav-h) - var(--section-pad) + 40px);
+}
+
+section:focus {
+  outline: none;
 }
 
 .section-label {

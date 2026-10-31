@@ -416,7 +416,7 @@
 .card__index {
   position: absolute;
   top: 12px;
-  left: 14px;
+  right: 14px;
   z-index: 1;
   color: var(--accent);
   font: 400 14px/1 var(--font-pixel);

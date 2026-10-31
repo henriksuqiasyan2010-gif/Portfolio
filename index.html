@@ -14,11 +14,11 @@
         try { rm = matchMedia('(prefers-reduced-motion: reduce)').matches } catch (e) {}
         if (rm) d.classList.add('rm')
         try {
-          if (!rm && !sessionStorage.getItem('intro-seen') && !/[?&]nointro\b/.test(location.search)) d.classList.add('intro')
+          if (!rm && !sessionStorage.getItem('intro-seen') && !/[?&]nointro\b/.test(location.search)) d.classList.add('intro-on')
           if (localStorage.getItem('theme') === 'green') d.setAttribute('data-theme', 'green')
         } catch (e) {}
         if ('WebGLRenderingContext' in window) d.classList.add('gl-maybe')
-        if (d.classList.contains('intro') && 'scrollRestoration' in history) history.scrollRestoration = 'manual'
+        if (d.classList.contains('intro-on') && 'scrollRestoration' in history) history.scrollRestoration = 'manual'
       })()
     </script>
     <link rel="stylesheet" href="/src/styles/index.css">
