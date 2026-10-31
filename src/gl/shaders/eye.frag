@@ -7,6 +7,7 @@ precision highp float;
 uniform float uTime;
 uniform float uPupil;  // радиус зрачка в долях радужки
 uniform float uBright; // 0..1 — проявление при сборке
+uniform mat3 normalMatrix;
 
 in vec3 vObj;
 in vec3 vN;
@@ -56,14 +57,17 @@ void main() {
 
   // ---------- склера: влажный белок, сосуды к периферии, тень от оболочки ----------
   vec2 around = normalize(n.xy + 1e-5);
-  float veins = ridge(around * 4.0 + vec2(theta * 3.0, -theta * 2.2)) * smoothstep(IRIS * 1.2, IRIS * 2.1, theta);
+  float veins = ridge(around * 4.0 + vec2(theta * 3.0, -theta * 2.2)) * smoothstep(IRIS * 1.15, IRIS * 1.9, theta);
+  float capillary = ridge(around * 11.0 + vec2(theta * 7.0, theta * 5.0)) * smoothstep(IRIS * 1.25, IRIS * 2.0, theta);
   float blot = noise(around * 3.0 + theta * 2.0); // неравномерный тон белка
-  vec3 sclera = mix(vec3(0.88, 0.85, 0.82), vec3(0.8, 0.7, 0.72), smoothstep(0.85, 1.6, theta) * 0.7);
+  vec3 sclera = mix(vec3(0.89, 0.86, 0.82), vec3(0.84, 0.74, 0.7), smoothstep(0.85, 1.6, theta) * 0.75);
   sclera *= 0.9 + 0.1 * blot;
-  sclera = mix(sclera, vec3(0.7, 0.13, 0.14), clamp(veins * 1.3, 0.0, 0.9));
+  sclera = mix(sclera, vec3(0.72, 0.14, 0.15), clamp(veins * 1.5 + capillary * 0.3, 0.0, 0.85));
   float ao = mix(1.0, 0.2, smoothstep(0.92, 1.42, theta));   // под панелями оболочки темно
   ao *= mix(0.72, 1.0, smoothstep(IRIS, IRIS * 1.35, theta)); // тень у края роговицы
-  sclera *= (0.14 + 0.86 * diff) * ao * 0.64;
+  float terminator = diff * (1.0 - diff) * 4.0;               // подповерхностное тепло на границе света и тени
+  sclera = sclera * (0.14 + 0.86 * diff) + vec3(0.2, 0.05, 0.04) * terminator * 0.35;
+  sclera *= ao * 0.64;
 
   // ---------- радужка: лежит под роговицей, при взгляде сбоку смещается (параллакс) ----------
   float cap = 1.0 - smoothstep(0.0, IRIS * 1.1, theta);
@@ -92,6 +96,19 @@ void main() {
   iris *= 1.0 - crypt * 0.65;
   iris *= 0.88 + 0.12 * sin(rr * 64.0 + fib * 4.0) * smoothstep(0.62, 0.86, rr); // контракционные бороздки
   iris = mix(iris, vec3(0.008, 0.04, 0.035), smoothstep(0.82, 1.0, rr));          // тёмный лимб
+
+  // рельеф волокон: «высота» узора освещается с одной стороны и затеняется с другой
+  float height = noise(dir * 26.0 + rr * 2.0) * 0.7 - furrow * 0.5 - crypt * 0.6; // только крупный узор: мелкий даёт зерно
+  vec2 slope = vec2(dFdx(height), dFdy(height));
+  iris *= clamp(1.0 - dot(slope, L.xy) * 2.0, 0.78, 1.22);
+
+  // каустика: роговица собирает свет в светлый серп на противоположной от источника стороне
+  vec3 Lo = normalize(transpose(normalMatrix) * L);
+  float caustic = smoothstep(0.2, 0.95, dot(dir, -normalize(Lo.xy + 1e-5))) * smoothstep(0.45, 0.8, rr) * (1.0 - smoothstep(0.86, 0.98, rr));
+  iris *= 1.0 + caustic * 0.9;
+
+  // тень сверху, как от века: верх радужки глубже и темнее
+  iris *= mix(1.0, 0.72, smoothstep(0.1, 0.9, dir.y) * smoothstep(0.35, 0.95, rr));
   iris *= 0.42 + 0.7 * diff;
 
   // кибер-деталь: тонкий пунктир сканера поверх радужки
@@ -106,12 +123,16 @@ void main() {
   color += GREEN * (1.0 - smoothstep(0.0, 0.02, abs(rr - 1.0))) * 0.3 * (0.4 + 0.6 * diff); // неоновая нить лимба
 
   // ---------- роговица и влага: отражения среды и блики ----------
-  vec3 R = reflect(-V, N);
+  // над радужкой роговица выпуклее яблока (радиус кривизны меньше): блики сидят на «куполе»
+  float cornea = 1.0 - smoothstep(IRIS * 0.95, IRIS * 1.2, theta);
+  float rxy = length(n.xy);
+  vec3 bulge = normalize(vec3(n.xy, sqrt(max(0.62 - rxy * rxy, 0.02))));
+  vec3 Nc = normalize(mix(N, normalize(normalMatrix * mix(n, bulge, cornea)), cornea));
+  vec3 R = reflect(-V, Nc);
   vec3 env = mix(vec3(0.012, 0.016, 0.024), vec3(0.07, 0.09, 0.12), R.y * 0.5 + 0.5);
   env += MAGENTA * 0.09 * smoothstep(0.1, 0.9, -R.x) + GREEN * 0.07 * smoothstep(0.1, 0.9, R.x);
   color += env * (0.3 + 0.7 * fres);
 
-  float cornea = 1.0 - smoothstep(IRIS * 0.95, IRIS * 1.2, theta);
   float rl = max(dot(R, L), 0.0);
   color += vec3(1.0, 0.98, 0.95) * (pow(rl, 700.0) * 2.4 * cornea + pow(rl, 40.0) * 0.1);
 
