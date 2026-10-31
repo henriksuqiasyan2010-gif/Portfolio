@@ -17,6 +17,7 @@ import type { GLApi } from './gl/renderer'
 gsap.registerPlugin(ScrollTrigger)
 
 const html = document.documentElement
+html.classList.add('booted')
 const debug = new URLSearchParams(location.search).has('debug')
 
 document.addEventListener('visibilitychange', () => (state.pageVisible = !document.hidden))

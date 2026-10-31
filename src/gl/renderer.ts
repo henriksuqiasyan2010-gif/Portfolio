@@ -46,6 +46,9 @@ export function startGL(canvas: HTMLCanvasElement): GLApi {
 
   renderer.autoClear = false
 
+  // шейдер не собрался на этой видеокарте/драйвере — уходим на фолбэк вместо пустого места
+  renderer.debug.onShaderError = () => fail()
+
   const particles = new Particles(LEVELS[level].particles)
   const eye = new Eye(LEVELS[level])
   const monitor = new FpsMonitor(() => {
@@ -136,7 +139,7 @@ export function startGL(canvas: HTMLCanvasElement): GLApi {
     dirty = false
     monitor.frame(dt)
 
-    if (!shown) {
+    if (!shown && !lost) {
       shown = true
       html.classList.add('gl-on')
       bus.emit('gl:shown')
@@ -153,11 +156,15 @@ export function startGL(canvas: HTMLCanvasElement): GLApi {
   window.addEventListener('resize', () => (needsResize = true))
   ScrollTrigger.addEventListener('refresh', measure)
 
-  canvas.addEventListener('webglcontextlost', (e) => {
-    e.preventDefault()
+  function fail() {
     lost = true
     html.classList.remove('gl-on', 'gl-maybe')
     html.classList.add('no-gl')
+  }
+
+  canvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault()
+    fail()
   })
   canvas.addEventListener('webglcontextrestored', () => {
     lost = false
@@ -193,6 +200,9 @@ export function startGL(canvas: HTMLCanvasElement): GLApi {
     },
   }
 
+  // компиляция заранее: без рывка при первом появлении глаза и с ранней проверкой шейдеров
+  void renderer.compileAsync(particles.scene, particles.camera).catch(() => fail())
+  void renderer.compileAsync(eye.scene, eye.camera).catch(() => fail())
   if (!document.hidden) start()
   return api
 }

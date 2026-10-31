@@ -19,6 +19,10 @@
         } catch (e) {}
         if ('WebGL2RenderingContext' in window) d.classList.add('gl-maybe')
         if (d.classList.contains('intro-on') && 'scrollRestoration' in history) history.scrollRestoration = 'manual'
+        // основной скрипт не стартовал (сеть, file://) — показываем фолбэки вместо пустого места
+        setTimeout(function () {
+          if (!d.classList.contains('booted')) d.classList.replace('gl-maybe', 'no-gl')
+        }, 3000)
       })()
     </script>
     <link rel="stylesheet" href="/src/styles/index.css">
