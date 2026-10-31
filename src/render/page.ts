@@ -27,8 +27,8 @@ function nav(c: Content) {
   return `
   <header class="nav">
     <div class="nav__inner">
-      <a class="nav__logo" href="#hero" aria-label="${esc(c.name)} — в начало">${esc(c.nav.logo)}<span class="caret" aria-hidden="true">_</span></a>
-      <nav class="nav__links" aria-label="Разделы"><ul>${links}</ul></nav>
+      <a class="nav__logo" href="#hero" aria-label="${esc(c.ui.homeLabel)}">${esc(c.nav.logo)}<span class="caret" aria-hidden="true">_</span></a>
+      <nav class="nav__links" aria-label="${esc(c.ui.navLabel)}"><ul>${links}</ul></nav>
       <button class="nav__sound" type="button" aria-pressed="false" data-on="${esc(c.nav.soundOn)}" data-off="${esc(c.nav.soundOff)}" hidden>${esc(c.nav.soundOff)}</button>
     </div>
   </header>`
@@ -68,7 +68,7 @@ function hero(c: Content) {
           .map((l) => `<span class="line">${esc(l)}</span>`)
           .join('<br>')}</h1>
         <p class="hero__sub">${h.subtitle.map(esc).join(' <br>')}</p>
-        <ul class="stats" aria-label="Цифры">${stats}
+        <ul class="stats" aria-label="${esc(c.ui.statsLabel)}">${stats}
         </ul>
         <div class="hero__cta">
           <a class="btn btn--primary" href="#projects">${btnInner(h.ctaProjects)}</a>
@@ -99,6 +99,7 @@ function about(c: Content) {
           <p class="skills__label"><span aria-hidden="true">$ </span>${esc(a.skillsLabel)}</p>
           <ul class="skills">${skills}
           </ul>
+          <p class="skills__soft"><span aria-hidden="true">+ </span>${esc(a.softSkills)}</p>
         </div>
         <div class="about__eye">
           <div class="eye-slot" id="eye-slot">
@@ -118,6 +119,12 @@ function card(c: Content, p: Project, i: number) {
   ]
     .filter(Boolean)
     .join('')
+  // на карточке — первые 6 технологий, полный список в модалке
+  const stack = p.stack
+    .slice(0, 6)
+    .map((s) => `<li>${esc(s)}</li>`)
+    .concat(p.stack.length > 6 ? [`<li>+${p.stack.length - 6}</li>`] : [])
+    .join('')
   return `
           <li class="card" data-id="${esc(p.id)}" data-tags="${esc(p.tags.join(' '))}">
             <article class="card__inner" aria-labelledby="card-${esc(p.id)}">
@@ -126,10 +133,10 @@ function card(c: Content, p: Project, i: number) {
                 <span class="card__index" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
               </div>
               <div class="card__body">
-                <p class="card__meta"><span>${esc(p.tags.join(' / '))}</span><span>${esc(p.year)}</span></p>
+                <p class="card__meta"><span>${esc(p.labels.slice(0, 2).join(' / '))}</span><span>${esc(p.year)}</span></p>
                 <h3 class="card__title glitch" id="card-${esc(p.id)}" data-text="${esc(p.title)}">${esc(p.title)}</h3>
                 <p class="card__desc">${esc(p.description)}</p>
-                <ul class="card__stack" aria-label="Стек">${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
+                <ul class="card__stack" aria-label="${esc(c.ui.stackLabel)}">${stack}</ul>
                 <div class="card__links">${links}</div>
                 <details class="card__more">
                   <summary>${esc(pr.more)}</summary>
@@ -226,7 +233,7 @@ function modal(c: Content) {
 
 export function renderBody(c: Content = defaultContent): string {
   return `
-  <a class="skip-link" href="#main">${esc(c.nav.skip)}</a>
+  <a class="skip-link" href="#main">${esc(c.ui.skip)}</a>
   <canvas class="gl" id="gl" aria-hidden="true"></canvas>
   <div class="stars" aria-hidden="true"></div>${intro(c)}${nav(c)}
   <main id="main">${hero(c)}${about(c)}${projects(c)}${contact(c)}

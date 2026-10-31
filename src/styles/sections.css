@@ -281,6 +281,17 @@
   color: var(--accent);
 }
 
+.skills__soft {
+  max-width: 460px;
+  margin-top: 14px;
+  color: var(--subtle);
+  font-size: 13px;
+}
+
+.skills__soft span {
+  color: var(--neon-green);
+}
+
 @media (min-width: 1024px) {
   .about__text {
     grid-column: 1 / span 6;
@@ -358,8 +369,9 @@
   }
 }
 
+/* три колонки — только когда карточек хотя бы три, иначе две без пустого места */
 @media (min-width: 1100px) {
-  .cards {
+  .cards:has(> .card:not(.is-hidden):nth-child(3)) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

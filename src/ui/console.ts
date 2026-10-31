@@ -40,47 +40,50 @@ function print(lines: Line[], instant = false) {
   out.scrollTop = out.scrollHeight
 }
 
+const t = content.console
+const fill = (s: string, vars: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k) => esc(vars[k] ?? ''))
+
 const COMMANDS: Record<string, { help?: string; run: (args: string[]) => Line[] | void }> = {
   help: {
-    help: 'список команд',
+    help: t.help.help,
     run: () => [
-      ['доступные команды:', 'c-acc'],
+      [esc(t.commandsTitle), 'c-acc'],
       ...Object.entries(COMMANDS)
         .filter(([, c]) => c.help)
         .map(([name, c]) => `  ${name.padEnd(16, ' ')}<span class="c-mut">${esc(c.help!)}</span>`),
-      ['  …и пара секретных', 'c-mut'],
+      [`  ${esc(t.secrets)}`, 'c-mut'],
     ],
   },
   about: {
-    help: 'кто я',
+    help: t.help.about,
     run: () => [
       esc(content.about.text),
       ['', ''],
       ...content.about.skills.map(
-        (s) => `<span class="c-acc">&gt;</span> ${esc(s.name.padEnd(18, '.'))} <span class="${s.status === 'ok' ? 'c-ok' : 'c-acc'}">${s.status}</span>`,
+        (s) => `<span class="c-acc">&gt;</span> ${esc(s.name.padEnd(26, '.'))} <span class="${s.status === 'ok' ? 'c-ok' : 'c-acc'}">${s.status}</span>`,
       ),
     ],
   },
   projects: {
-    help: 'список проектов',
+    help: t.help.projects,
     run: () => [
       ...content.projects.items.map(
         (p) =>
-          `<span class="c-acc">${esc(p.id.padEnd(11, ' '))}</span> ${esc(p.title)} <span class="c-mut">[${esc(p.tags.join(', '))}] — ${esc(p.description)}</span>`,
+          `<span class="c-acc">${esc(p.id.padEnd(9, ' '))}</span> ${esc(p.title)} <span class="c-mut">[${esc(p.labels.slice(0, 2).join(', '))}] — ${esc(p.description)}</span>`,
       ),
-      ['подробнее: open &lt;id&gt;, например open ' + esc(content.projects.items[0]?.id ?? ''), 'c-mut'],
+      [`${esc(t.openHint)} ${esc(content.projects.items[0]?.id ?? '')}`, 'c-mut'],
     ],
   },
   open: {
-    help: 'открыть проект: open <id>',
+    help: t.help.open,
     run: ([id]) => {
       const p = content.projects.items.find((x) => x.id === id)
-      if (!p) return [[`нет проекта «${esc(id ?? '')}». список: projects`, 'c-err']]
+      if (!p) return [[esc(t.noProject), 'c-err']]
       close(() => bus.emit('project:open', p.id))
     },
   },
   contact: {
-    help: 'как со мной связаться',
+    help: t.help.contact,
     run: () => [
       `email     <a class="link" href="mailto:${esc(content.contact.email)}">${esc(content.contact.email)}</a>`,
       ...content.contact.links.map(
@@ -89,38 +92,31 @@ const COMMANDS: Record<string, { help?: string; run: (args: string[]) => Line[] 
     ],
   },
   theme: {
-    help: 'theme amber | green',
+    help: t.help.theme,
     run: ([name]) => {
       const next = name === 'green' || name === 'amber' ? name : document.documentElement.dataset.theme === 'green' ? 'amber' : 'green'
       setTheme(next)
-      return [[`тема: ${next}`, 'c-ok']]
+      return [[fill(t.themeSet, { name: next }), 'c-ok']]
     },
   },
-  clear: { help: 'очистить экран', run: () => void out.replaceChildren() },
-  exit: { help: 'закрыть консоль (или Esc)', run: () => close() },
+  clear: { help: t.help.clear, run: () => void out.replaceChildren() },
+  exit: { help: t.help.exit, run: () => close() },
 
   // пасхалки — в help не показываются
-  sudo: {
-    run: () => [
-      '[sudo] password for guest: ********',
-      ['guest is not in the sudoers file. This incident will be reported.', 'c-err'],
-    ],
-  },
-  rm: { run: () => [['rm: не удаётся удалить «/»: сайт держит оборону. push back.', 'c-err']] },
+  sudo: { run: () => [esc(t.eggs.sudoPassword), [esc(t.eggs.sudo), 'c-err']] },
+  rm: { run: () => [[esc(t.eggs.rm), 'c-err']] },
   hack: {
     run: () => {
-      const steps = ['bypassing firewall', 'decrypting mainframe', 'downloading more RAM', 'rerouting through the eye']
+      const steps = t.eggs.hackSteps
       steps.forEach((s, i) => gsap.delayedCall(0.35 * (i + 1), () => print([`${esc(s.padEnd(26, '.'))} <span class="c-ok">ok</span>`])))
-      gsap.delayedCall(0.35 * (steps.length + 1), () =>
-        print([['ACCESS GRANTED', 'c-acc'], ['…шучу. но если нужен такой сайт — введите contact', 'c-mut']]),
-      )
-      return [['initiating hack...', 'c-mut']]
+      gsap.delayedCall(0.35 * (steps.length + 1), () => print([[esc(t.eggs.hackDone), 'c-acc'], [esc(t.eggs.hackJoke), 'c-mut']]))
+      return [[esc(t.eggs.hackStart), 'c-mut']]
     },
   },
-  coffee: { run: () => [['HTTP 418: I’m a teapot', 'c-acc'], ['кофе не будет, но код — в любое время', 'c-mut']] },
-  whoami: { run: () => ['guest', ['но можно стать клиентом: contact', 'c-mut']] },
+  coffee: { run: () => [[esc(t.eggs.coffee), 'c-acc'], [esc(t.eggs.coffeeNote), 'c-mut']] },
+  whoami: { run: () => [esc(t.eggs.whoami), [esc(t.eggs.whoamiNote), 'c-mut']] },
   ls: { run: () => ['about.txt  projects/  contact.sh  <span class="c-err">secrets/</span>'] },
-  cat: { run: ([f]) => [[f?.startsWith('secret') ? 'доступ запрещён. глаз всё видит.' : `cat: ${esc(f ?? '')}: попробуйте about`, 'c-err']] },
+  cat: { run: ([f]) => [[f?.startsWith('secret') ? esc(t.eggs.catSecret) : fill(t.eggs.catOther, { file: f ?? '' }), 'c-err']] },
   glitch: {
     run: () => {
       $$('.glitch').forEach((el, i) => gsap.delayedCall(i * 0.05, () => glitch(el, 0.3)))
@@ -137,14 +133,14 @@ function run(raw: string) {
   cursor = history.length
   const [name, ...args] = line.split(/\s+/)
   const cmd = COMMANDS[name.toLowerCase()]
-  const res = cmd ? cmd.run(args) : [[`команда не найдена: ${esc(name)}. введите help`, 'c-err'] as Line]
+  const res = cmd ? cmd.run(args) : [[fill(t.notFound, { cmd: name }), 'c-err'] as Line]
   if (res) print(res)
 }
 
 function build() {
   dialog = document.createElement('dialog')
   dialog.className = 'console'
-  dialog.setAttribute('aria-label', 'Терминал')
+  dialog.setAttribute('aria-label', content.console.title)
   dialog.innerHTML = `
     <div class="console__bar" aria-hidden="true"><span></span><span></span><span></span><b>${esc(content.console.title)}</b></div>
     <button class="console__close" type="button">[ esc ]</button>

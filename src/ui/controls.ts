@@ -1,3 +1,4 @@
+import { content } from '../content'
 import { $, bus } from '../state'
 
 const typingTarget = (el: EventTarget | null) =>
@@ -21,7 +22,7 @@ export function initConsoleTrigger() {
     btn.type = 'button'
     btn.className = 'kbd-btn'
     btn.textContent = '~'
-    btn.setAttribute('aria-label', 'Открыть консоль')
+    btn.setAttribute('aria-label', content.ui.openConsole)
     btn.addEventListener('click', () => void open())
     kbd.replaceWith(btn)
   }

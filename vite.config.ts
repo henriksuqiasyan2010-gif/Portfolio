@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from 'vite'
 import { renderBody, renderHead } from './src/render/page.ts'
+import { content } from './src/content.ts'
 
 // Подставляет разметку из content.ts в index.html.
 // content.ts импортируется конфигом, поэтому Vite перезапускает dev-сервер при его правке.
@@ -8,7 +9,11 @@ function contentHtml(): Plugin {
     name: 'content-html',
     transformIndexHtml: {
       order: 'pre',
-      handler: (html) => html.replace('<!--head-->', renderHead()).replace('<!--app-->', renderBody()),
+      handler: (html) =>
+        html
+          .replace(/<html lang="[^"]*">/, `<html lang="${content.lang}">`)
+          .replace('<!--head-->', renderHead())
+          .replace('<!--app-->', renderBody()),
     },
   }
 }

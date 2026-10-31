@@ -2,6 +2,7 @@
 // Разметка страницы собирается из этого файла при сборке (см. vite.config.ts),
 // поэтому всё здесь видно и без JavaScript.
 
+/** Категория для фильтра проектов. */
 export type Tag = 'ML' | 'Data' | 'Web'
 
 export interface Project {
@@ -12,7 +13,10 @@ export interface Project {
   /** абзацы для модального окна */
   details: string[]
   highlights: string[]
+  /** категории для фильтра */
   tags: Tag[]
+  /** подписи на карточке и в модалке */
+  labels: string[]
   stack: string[]
   year: string
   /** превью 800×500, лежит в /public/projects */
@@ -34,27 +38,36 @@ export interface Stat {
   label: string
 }
 
-const name = 'HENRIK'
+const name = 'Henrik'
 
 export const content = {
   name,
-  lang: 'ru',
+  lang: 'en',
   meta: {
     title: `${name} — sites that push back`,
-    description: `${name}: ML, Data и Web-разработка. Портфолио в эстетике ретро-терминала.`,
+    description: `${name}: Data Science, ML and Web — from raw data to a working product.`,
     themeColor: '#07070C',
+  },
+
+  /** подписи для скринридеров и служебные строки интерфейса */
+  ui: {
+    skip: 'Skip to content',
+    homeLabel: `${name} — back to top`,
+    navLabel: 'Sections',
+    statsLabel: 'Numbers',
+    stackLabel: 'Stack',
+    openConsole: 'Open the console',
   },
 
   nav: {
     logo: `~/${name.toLowerCase()}`,
     links: [
-      { href: '#about', label: 'обо мне' },
-      { href: '#projects', label: 'проекты' },
-      { href: '#contact', label: 'контакты' },
+      { href: '#about', label: 'about' },
+      { href: '#projects', label: 'projects' },
+      { href: '#contact', label: 'contact' },
     ],
-    soundOn: 'звук: вкл',
-    soundOff: 'звук: выкл',
-    skip: 'Перейти к содержимому',
+    soundOn: 'sound: on',
+    soundOff: 'sound: off',
   },
 
   intro: {
@@ -62,190 +75,176 @@ export const content = {
   },
 
   hero: {
-    kicker: `${name} · ML / Data / Web`,
+    kicker: 'Data Science · ML · Web',
     title: ['SITES THAT', 'PUSH BACK'],
-    subtitle: [
-      'Делаю интерфейсы, которые отвечают на каждое движение,',
-      'и модели, которые находят сигнал в шуме данных.',
-    ],
+    subtitle: ['From raw data to a working product:', 'I collect data, train models and turn ideas into apps.'],
     stats: [
-      { value: 5, suffix: '+', label: 'лет в коде' },
-      { value: 32, label: 'проекта в проде' },
-      { value: 2480, label: 'коммитов за год' },
-    ] satisfies Stat[],
-    ctaProjects: 'Проекты',
-    ctaContact: 'Связаться',
+      { value: 2, label: 'years in IT' },
+      { value: 2, label: 'projects' },
+      { value: 1, label: 'in development' },
+    ] as Stat[],
+    ctaProjects: 'Projects',
+    ctaContact: 'Get in touch',
     scrollHint: 'scroll',
   },
 
   about: {
-    label: '01 // обо мне',
+    label: '01 // about',
     title: 'Cyber eye',
-    text: `Я ${name}, разработчик на стыке машинного обучения и веба. Обучаю модели, строю пайплайны данных и превращаю результаты в интерфейсы, которые хочется трогать. Люблю, когда код быстрый, графика плавная, а данные честные.`,
+    text: 'I’ve been in IT for two years, working across data analysis, machine learning and web development: I collect data, train models and turn ideas into working products. I’ve taken part in many hackathons and went through the 301 AD startup program, where I founded my own startup. Currently open to freelance work. I also run “a couch potato”, a channel about programming, Claude and satisfying code visualizations.',
     skillsLabel: 'diagnostics',
     skills: [
       { name: 'python', status: 'ok' },
-      { name: 'pytorch', status: 'ok' },
-      { name: 'pandas / sql', status: 'ok' },
+      { name: 'pytorch / deep learning', status: 'ok' },
+      { name: 'mediapipe / opencv / cv', status: 'ok' },
+      { name: 'numpy / pandas / sklearn', status: 'ok' },
+      { name: 'data analysis', status: 'ok' },
       { name: 'typescript', status: 'ok' },
-      { name: 'three.js / webgl', status: 'ok' },
-      { name: 'docker / ci', status: 'ok' },
-      { name: 'rust', status: 'wip' },
+      { name: 'react / next.js', status: 'ok' },
+      { name: 'node.js / express', status: 'ok' },
+      { name: 'postgresql', status: 'ok' },
+      { name: 'pytest / vitest', status: 'ok' },
+      { name: 'ci/cd (github actions)', status: 'ok' },
+      { name: 'claude code / ai tools', status: 'ok' },
+      { name: 'generative image models', status: 'wip' },
     ] satisfies Skill[],
-    eyeAlt: 'Неоновый кибер-глаз в панельной оболочке',
+    softSkills: 'communication · leadership · strong work ethic',
+    eyeAlt: 'A neon cyber eye inside a panelled shell',
   },
 
   projects: {
-    label: '02 // проекты',
-    title: 'Проекты',
-    filterLabel: 'Фильтр проектов по тегам',
-    filterAll: 'Все',
-    more: 'подробнее',
+    label: '02 // projects',
+    title: 'Projects',
+    filterLabel: 'Filter projects by category',
+    filterAll: 'All',
+    more: 'details',
     demo: 'demo',
     github: 'github',
-    close: 'закрыть',
+    close: 'close',
     items: [
       {
-        id: 'inview',
-        title: 'Inview',
-        description: 'Первая работа, волонтёрство, люди и совместные проекты для подростков 14–18 лет.',
+        id: 'slt',
+        title: 'SLT',
+        description: 'Real-time American Sign Language recognition from an ordinary webcam, with translation into English, Armenian and Russian.',
         details: [
-          'Веб-платформа, где подростки находят первую работу, волонтёрство, единомышленников и проекты, которые можно делать вместе. Обычные доски вакансий сделаны для взрослых, а соцсети — для подписчиков. Отсюда слоган на главной: «Сейчас тебя никто не видит».',
-          'Каждое объявление фильтруется по возрасту зрителя и проверяется человеком перед публикацией. Поиск «своими словами» превращает фразу вроде «платная работа на выходных с фотографией» в фильтры, причём детерминированным парсером, без LLM. Есть заявки в один клик, сообщения по запросу и админка с очередями модерации.',
-          'Безопасность — основа, а не функция. Возраст считается на сервере из даты рождения, которая никогда не попадает в браузер. Браузер вообще не обращается к базе. Три жалобы скрывают профиль автоматически, а журнал аудита защищён триггером в самой базе данных.',
+          'For Deaf and hard-of-hearing people, sign language is their native language, yet most hearing people don’t know it. SLT is a Windows app that helps close that gap: it recognizes ASL signs through a regular webcam, shows the word in three languages and can speak it aloud.',
+          'It has three modes. In Single word mode, the app names the sign, shows its confidence and offers two alternatives. In Sentence mode, signs build up into a line, and any mistake can be fixed with one click on a suggestion. In Learn mode, the app shows an animation of the correct sign, scores your attempt and compares it side by side with the reference.',
+          'Under the hood, MediaPipe Holistic extracts 543 body, hand and face landmarks per frame. The 130 most informative points are normalized and fed into a hybrid 1D-CNN + Transformer network, trained on Kaggle GPUs on Google’s Isolated Sign Language Recognition dataset (~94,500 clips of 250 signs from 21 signers). The model is exported to ONNX and runs fully offline on a laptop.',
+          'Training: mixed precision, AdamW, cosine LR schedule, label smoothing, mixup, landmark-level augmentation, participant-grouped cross-validation.',
+          'Limitations: SLT recognizes isolated signs, not continuous signing. It has a 250-word vocabulary, and most signs are one-handed.',
         ],
         highlights: [
-          '277 автотестов на реальном PostgreSQL, без моков',
-          '~19 000 строк кода, 21 таблица, 11 миграций',
-          'три языка интерфейса: английский, русский, армянский',
+          '65% top-1 and ~75% top-3 accuracy on unseen signers across 250 classes (random chance is under 0.5%)',
+          '~2 ms inference on CPU, fully offline',
+          'a “follow the moving hand” rule fixed two-hand tracking and raised accuracy on those signs from 37% to 61%',
+          '10/10 signs and 15/15 words in sentences recognized in live tests',
+          'standalone Windows app that runs without Python installed',
         ],
-        tags: ['Web'],
-        stack: ['Next.js 16', 'React 19', 'TypeScript', 'Express 5', 'PostgreSQL 17', 'Drizzle'],
+        tags: ['ML'],
+        labels: ['Computer Vision', 'Deep Learning', 'Transformers', 'Accessibility', 'Desktop App'],
+        stack: [
+          'Python 3.11', 'PyTorch', 'MediaPipe Holistic', 'OpenCV', 'ONNX Runtime', 'NumPy', 'pandas', 'PyArrow',
+          'scikit-learn', 'PySide6 (Qt)', 'pyttsx3', 'Matplotlib', 'pytest', 'PyInstaller', 'Kaggle (Tesla T4)',
+        ],
         year: '2026',
-        image: '/projects/inview.webp',
-        imageAlt: 'Превью Inview: поиск своими словами, карточки с бейджем возраста и журнал модерации',
+        image: '/projects/slt.webp',
+        imageAlt: 'SLT preview: hand landmarks on a webcam frame and a sentence built from recognized signs',
         demo: '',
         github: '',
       },
       {
-        id: 'pulse',
-        title: 'Pulse Board',
-        description: 'Дашборд метрик в реальном времени на миллион событий в минуту.',
+        id: 'inview',
+        title: 'Inview',
+        description: 'First jobs, volunteering, people and joint projects — for 14 to 18 year olds.',
         details: [
-          'Поток событий из Kafka складывается в ClickHouse, агрегаты считаются материализованными представлениями.',
-          'Фронтенд рисует графики на canvas и не теряет плавность даже при обновлении раз в секунду.',
+          'Job boards are built for adults: a teenager can’t tell what they’re legally allowed to do, or whether a real organization stands behind a listing. Social networks reward followers rather than doing things, so a teen without a network has no way in. “Right now, nobody can see you.” Inview gives them a place to be seen.',
+          'Teens browse jobs and volunteering filtered to their age. They can search in plain language: “paid weekend work with photography” turns into filter chips through a deterministic parser, with no LLM. They apply in one click and see exactly what the organization will receive. They can also find peers by shared interests or start projects others can join. Organizations submit listings through a public form, and a moderator verifies each one against a mandatory checklist before it goes live.',
+          'Safety is the foundation, not a feature. Age is derived on the server from an immutable date of birth that never reaches the browser. Profiles collect no photos, surnames, phones or schools. Profile text is reviewed by a human, and three reports auto-hide a profile. Messaging works on a request-to-chat basis with rate limits, and an append-only audit log is enforced by a database trigger. The browser never talks to the database directly: every age check and moderation gate lives on the server.',
         ],
-        highlights: ['p95 запроса меньше 120 мс', 'алерты по аномалиям', 'тёмная и светлая темы'],
-        tags: ['Data', 'Web'],
-        stack: ['ClickHouse', 'Kafka', 'Python', 'Canvas'],
-        year: '2025',
-        image: '/projects/pulse.webp',
-        imageAlt: 'Превью Pulse Board: графики метрик на тёмном фоне',
-        demo: 'https://example.com',
-        github: 'https://github.com/',
-      },
-      {
-        id: 'kepler',
-        title: 'Kepler Recs',
-        description: 'Рекомендательная система для каталога из 200 тысяч товаров.',
-        details: [
-          'Двухбашенная модель для кандидатов и градиентный бустинг для ранжирования. Обучение по расписанию в Airflow.',
-          'A/B-тест показал рост кликов на 14 % по сравнению с правилами «похожие товары».',
+        highlights: [
+          'working MVP, fully trilingual (English / Russian / Armenian), including emails and legal pages',
+          '~19,000 lines of application code and ~4,000 lines of tests',
+          '277 automated tests running against a real PostgreSQL database, not mocks',
+          '21 tables, 11 migrations, 4 scheduled background jobs',
+          'CI pipeline: lint → typecheck → migrate → test → build',
         ],
-        highlights: ['+14 % CTR в A/B-тесте', 'обновление эмбеддингов каждую ночь', 'объяснимые рекомендации'],
-        tags: ['ML', 'Data'],
-        stack: ['PyTorch', 'CatBoost', 'Airflow', 'Postgres'],
-        year: '2025',
-        image: '/projects/kepler.webp',
-        imageAlt: 'Превью Kepler Recs: граф связей между товарами',
-        demo: '',
-        github: 'https://github.com/',
-      },
-      {
-        id: 'atlas',
-        title: 'Atlas ETL',
-        description: 'Пайплайн, который собирает данные из 40 источников в одно хранилище.',
-        details: [
-          'Инкрементальная загрузка, проверки качества данных и автоматическая документация моделей dbt.',
-          'Если источник присылает мусор, пайплайн не падает, а складывает строки в карантин и пишет в Telegram.',
-        ],
-        highlights: ['40 источников', 'тесты качества на каждом шаге', 'время прогона сократилось с 3 ч до 25 мин'],
-        tags: ['Data'],
-        stack: ['dbt', 'Airflow', 'Python', 'BigQuery'],
-        year: '2024',
-        image: '/projects/atlas.webp',
-        imageAlt: 'Превью Atlas ETL: схема потоков данных',
-        demo: '',
-        github: 'https://github.com/',
-      },
-      {
-        id: 'echonote',
-        title: 'EchoNote',
-        description: 'Голосовые заметки, которые сами превращаются в задачи.',
-        details: [
-          'Распознавание речи на Whisper, затем небольшая языковая модель вытаскивает из текста задачи, даты и людей.',
-          'Бэкенд на FastAPI, интерфейс — веб-приложение с офлайн-очередью записей.',
-        ],
-        highlights: ['русский и английский', 'обработка на своём сервере', 'экспорт в календарь'],
-        tags: ['ML', 'Web'],
-        stack: ['Whisper', 'FastAPI', 'TypeScript', 'SQLite'],
-        year: '2024',
-        image: '/projects/echonote.webp',
-        imageAlt: 'Превью EchoNote: звуковая волна и список задач',
-        demo: 'https://example.com',
-        github: 'https://github.com/',
-      },
-      {
-        id: 'terminal',
-        title: 'Retro Terminal',
-        description: 'Этот сайт: WebGL, шейдеры и 60 fps на встроенной графике.',
-        details: [
-          'Один WebGL-контекст на всю страницу, частицы с отталкиванием в вершинном шейдере и процедурный глаз.',
-          'Качество графики подстраивается под железо и само снижается, если FPS проседает.',
-        ],
-        highlights: ['3 уровня качества', 'работает без WebGL и без JS', 'скрытая консоль по ~'],
         tags: ['Web'],
-        stack: ['three.js', 'GLSL', 'GSAP', 'Vite'],
+        labels: ['Full-Stack', 'Startup', 'Trust & Safety', 'i18n', 'Teens'],
+        stack: [
+          'TypeScript', 'Next.js 16', 'React 19', 'Tailwind CSS 4', 'next-intl', 'Node.js 24', 'Express 5', 'PostgreSQL 17',
+          'Drizzle ORM', 'Zod', 'JWT', 'Vitest', 'GitHub Actions', 'Vercel', 'Render', 'Neon',
+        ],
         year: '2026',
-        image: '/projects/terminal.webp',
-        imageAlt: 'Превью Retro Terminal: окно терминала с неоновым текстом',
-        demo: 'https://example.com',
-        github: 'https://github.com/',
+        image: '/projects/inview.webp',
+        imageAlt: 'Inview preview: plain-language search, listings with age badges and the moderation ledger',
+        demo: '',
+        github: '',
       },
     ] satisfies Project[],
   },
 
   contact: {
-    label: '03 // контакты',
-    title: 'Связь',
-    text: 'Есть задача, идея или вакансия? Напишите пару строк — отвечу в течение суток.',
-    email: 'hello@example.com',
+    label: '03 // contact',
+    title: 'Contact',
+    text: 'Got a task, an idea or a role? Drop me a few lines — I’m open to freelance work and reply within a day.',
+    email: 'henrik.suqiasyan2010@gmail.com',
     /** адрес сервиса форм (например, Formspree). Пусто — письмо уйдёт через mailto: */
     formEndpoint: '',
     formTitle: 'contact.sh',
     fields: { name: 'name', email: 'email', message: 'message' },
-    submit: 'отправить',
+    submit: 'send',
     sending: 'transmitting...',
-    done: 'ok — сообщение отправлено',
-    mailtoDone: 'ok — открываю почтовый клиент',
-    error: 'error — не получилось, напишите на почту напрямую',
+    done: 'ok — message sent',
+    mailtoDone: 'ok — opening your mail app',
+    error: 'error — that didn’t work, please email me directly',
+    mailSubject: 'Message from the site from',
     links: [
-      { label: 'GitHub', href: 'https://github.com/' },
-      { label: 'Telegram', href: 'https://t.me/' },
-      { label: 'TikTok', href: 'https://www.tiktok.com/' },
-      { label: 'YouTube', href: 'https://www.youtube.com/' },
+      { label: 'GitHub', href: 'https://github.com/henriksuqiasyan2010-gif' },
+      { label: 'Telegram', href: 'https://t.me/hibrotherrrr' },
+      { label: 'YouTube', href: 'https://www.youtube.com/@A-couch-potato-python' },
     ],
   },
 
   footer: {
-    hint: 'нажми ~ — откроется консоль',
-    top: 'наверх',
+    hint: 'press ~ to open the console',
+    top: 'back to top',
   },
 
   console: {
     title: 'terminal',
-    motd: `${name.toLowerCase()}-os v2.6 — введите help`,
+    motd: `${name.toLowerCase()}-os v2.6 — type help`,
     prompt: `guest@${name.toLowerCase()}:~$`,
+    help: {
+      help: 'list commands',
+      about: 'who I am',
+      projects: 'list projects',
+      open: 'open a project: open <id>',
+      contact: 'how to reach me',
+      theme: 'theme amber | green',
+      clear: 'clear the screen',
+      exit: 'close the console (or Esc)',
+    },
+    commandsTitle: 'available commands:',
+    secrets: '…and a couple of secret ones',
+    openHint: 'details: open <id>, e.g. open',
+    noProject: 'no such project. list them with: projects',
+    notFound: 'command not found: {cmd}. type help',
+    themeSet: 'theme: {name}',
+    eggs: {
+      sudoPassword: '[sudo] password for guest: ********',
+      sudo: 'guest is not in the sudoers file. This incident will be reported.',
+      rm: 'rm: cannot remove "/": this site pushes back.',
+      hackStart: 'initiating hack...',
+      hackSteps: ['bypassing firewall', 'decrypting mainframe', 'downloading more RAM', 'rerouting through the eye'],
+      hackDone: 'ACCESS GRANTED',
+      hackJoke: '…just kidding. want a site like this? type contact',
+      coffee: 'HTTP 418: I’m a teapot',
+      coffeeNote: 'no coffee here, but code any time',
+      whoami: 'guest',
+      whoamiNote: 'but you could become a client: contact',
+      catSecret: 'access denied. the eye sees everything.',
+      catOther: 'cat: {file}: try about',
+    },
   },
 }
 

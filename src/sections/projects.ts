@@ -100,11 +100,11 @@ export function initProjects() {
     body.innerHTML = `
       <div class="modal__media"><img src="${esc(p.image)}" width="800" height="500" alt="${esc(p.imageAlt)}"></div>
       <div class="modal__body">
-        <p class="modal__meta">${esc(p.tags.join(' / '))} · ${esc(p.year)}</p>
+        <p class="modal__meta">${esc(p.labels.join(' / '))} · ${esc(p.year)}</p>
         <h2 class="modal__title glitch" id="modal-title" data-text="${esc(p.title)}">${esc(p.title)}</h2>
         ${p.details.map((d) => `<p>${esc(d)}</p>`).join('')}
         <ul class="modal__highlights">${p.highlights.map((h) => `<li>${esc(h)}</li>`).join('')}</ul>
-        <ul class="modal__stack" aria-label="Стек">${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
+        <ul class="modal__stack" aria-label="${esc(content.ui.stackLabel)}">${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
         <div class="modal__links">${links}</div>
       </div>`
   }

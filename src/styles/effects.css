@@ -297,6 +297,7 @@ html.intro-on .intro {
 
 .intro__name {
   color: var(--accent);
+  text-transform: uppercase;
   font: 400 clamp(52px, 13vw, 168px) / 1 var(--font-pixel);
   letter-spacing: 0.04em;
   text-shadow:

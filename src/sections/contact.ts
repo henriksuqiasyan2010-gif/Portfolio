@@ -1,4 +1,5 @@
 import { gsap } from 'gsap'
+import { content } from '../content'
 import { $, bus, state } from '../state'
 
 const BLOCKS = 10
@@ -64,7 +65,7 @@ export function initContact() {
       ok = res
     } else {
       // mailto открывается сразу, пока жест пользователя ещё «свежий»
-      const subject = encodeURIComponent(`Сообщение с сайта от ${name}`)
+      const subject = encodeURIComponent(`${content.contact.mailSubject} ${name}`)
       const body = encodeURIComponent(`${message}\n\n— ${name}${from ? ` <${from}>` : ''}`)
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`
       doneText = status.dataset.mailto ?? doneText
