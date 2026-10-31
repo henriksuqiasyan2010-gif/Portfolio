@@ -451,3 +451,39 @@ html.intro-on .intro {
     animation: none !important;
   }
 }
+
+/* ---------- панель ?debug ---------- */
+
+.debug {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 350;
+  padding: 10px 12px;
+  background: rgb(15 15 24 / 0.92);
+  border: 1px solid var(--line-strong);
+  color: var(--neon-green);
+  font: 11px/1.5 var(--font-mono);
+}
+
+.debug pre {
+  margin: 0 0 8px;
+  font: inherit;
+}
+
+.debug__levels {
+  display: flex;
+  gap: 4px;
+}
+
+.debug button {
+  padding: 2px 8px;
+  border: 1px solid var(--line-strong);
+  color: var(--subtle);
+  font-size: 11px;
+}
+
+.debug button.is-on {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}

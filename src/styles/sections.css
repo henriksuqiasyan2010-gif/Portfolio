@@ -9,6 +9,19 @@
   padding-block: calc(var(--nav-h) + 56px) 112px;
 }
 
+/* статичная «туманность» поверх поля частиц — дешёвый градиент, без анимации */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 42% 48% at 78% 38%, rgb(255 47 208 / 0.07), transparent 70%),
+    radial-gradient(ellipse 36% 40% at 88% 72%, rgb(46 230 255 / 0.05), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 30% 30%, rgb(255 157 46 / 0.04), transparent 70%);
+}
+
 .hero__kicker {
   margin-bottom: 28px;
   color: var(--subtle);

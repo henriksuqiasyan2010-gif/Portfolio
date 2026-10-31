@@ -20,5 +20,7 @@ export default defineConfig({
     cssMinify: true,
     modulePreload: { polyfill: false },
     reportCompressedSize: true,
+    // three.js — отдельный ленивый чанк ~135 KB gzip, это ожидаемо
+    chunkSizeWarningLimit: 700,
   },
 })

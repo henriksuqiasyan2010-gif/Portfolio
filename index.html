@@ -17,7 +17,7 @@
           if (!rm && !sessionStorage.getItem('intro-seen') && !/[?&]nointro\b/.test(location.search)) d.classList.add('intro-on')
           if (localStorage.getItem('theme') === 'green') d.setAttribute('data-theme', 'green')
         } catch (e) {}
-        if ('WebGLRenderingContext' in window) d.classList.add('gl-maybe')
+        if ('WebGL2RenderingContext' in window) d.classList.add('gl-maybe')
         if (d.classList.contains('intro-on') && 'scrollRestoration' in history) history.scrollRestoration = 'manual'
       })()
     </script>
