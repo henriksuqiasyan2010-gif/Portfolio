@@ -461,6 +461,8 @@
   top: 12px;
   right: 14px;
   z-index: 1;
+  padding: 4px 6px;
+  background: rgb(7 7 12 / 0.78);
   color: var(--accent);
   font: 400 14px/1 var(--font-pixel);
 }
