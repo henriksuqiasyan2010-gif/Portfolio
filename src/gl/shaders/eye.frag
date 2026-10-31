@@ -115,12 +115,12 @@ void main() {
   float rl = max(dot(R, L), 0.0);
   color += vec3(1.0, 0.98, 0.95) * (pow(rl, 700.0) * 2.4 * cornea + pow(rl, 40.0) * 0.1);
 
-  // отражение окна с переплётом — характерный «живой» блик
+  // мягкий вытянутый отблеск софтбокса — «живой» блик без переплёта
   vec3 W = normalize(vec3(-0.34, 0.42, 0.84));
-  vec2 w = (R.xy - W.xy) / vec2(0.1, 0.075);
-  float pane = (1.0 - smoothstep(0.8, 1.0, abs(w.x))) * (1.0 - smoothstep(0.8, 1.0, abs(w.y)));
-  pane *= smoothstep(0.05, 0.14, abs(w.x)) * smoothstep(0.05, 0.14, abs(w.y));
-  color += vec3(0.9, 0.95, 1.0) * pane * 0.75 * cornea;
+  vec2 w = (R.xy - W.xy) / vec2(0.13, 0.06);
+  float box = 1.0 - smoothstep(0.55, 1.0, length(w * vec2(0.85, 1.0)));
+  box *= 0.75 + 0.25 * smoothstep(-1.0, 1.0, w.y); // к верху чуть ярче
+  color += vec3(0.88, 0.93, 1.0) * box * 0.55 * cornea;
 
   // неоновый отсвет снизу справа и контровой ободок
   vec3 L2 = normalize(vec3(0.6, -0.35, 0.7));
