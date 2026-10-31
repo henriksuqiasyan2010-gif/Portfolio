@@ -76,7 +76,7 @@ export class Bloom {
     r.clear()
     r.render(scene, camera)
     this.quad.material = this.blur
-    this.pass(r, this.rtScene.texture, this.rtA, 1, 0, 0.6)
+    this.pass(r, this.rtScene.texture, this.rtA, 1, 0, 0.7)
     this.pass(r, this.rtA.texture, this.rtB, 0, 1)
     this.pass(r, this.rtB.texture, this.rtA, 2.2, 0)
     this.pass(r, this.rtA.texture, this.rtB, 0, 2.2)
