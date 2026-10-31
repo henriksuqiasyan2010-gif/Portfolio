@@ -17,7 +17,9 @@ export function prepareScramble(el: HTMLElement): Scrambler {
   const chars: HTMLElement[] = []
   const sr = document.createElement('span')
   sr.className = 'sr-only'
-  sr.textContent = el.textContent?.replace(/\s+/g, ' ').trim() ?? ''
+  const plain = el.cloneNode(true) as HTMLElement
+  plain.querySelectorAll('br').forEach((br) => br.replaceWith(' ')) // иначе строки склеятся: «THATPUSH»
+  sr.textContent = plain.textContent?.replace(/\s+/g, ' ').trim() ?? ''
 
   const vis = document.createElement('span')
   vis.className = 'scr'

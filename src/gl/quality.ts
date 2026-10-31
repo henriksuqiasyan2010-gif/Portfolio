@@ -20,8 +20,11 @@ const cap = (a: QualityLevel, b: QualityLevel) => ORDER[Math.min(ORDER.indexOf(a
 
 /** Строка видеокарты из уже созданного контекста рендерера — второй контекст не нужен. */
 export function gpuName(gl: WebGLRenderingContext | WebGL2RenderingContext): string {
+  // Firefox и Safari уже отдают видеокарту в RENDERER (и считают расширение устаревшим), Chrome — маскирует
+  const plain = String(gl.getParameter(gl.RENDERER))
+  if (!/^webkit webgl$|^mozilla$/i.test(plain.trim())) return plain
   const ext = gl.getExtension('WEBGL_debug_renderer_info')
-  return String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER))
+  return ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : plain
 }
 
 /** Стартовый уровень по ядрам, памяти и видеокарте; мобильные — не выше Medium. */

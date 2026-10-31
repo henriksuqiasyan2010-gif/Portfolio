@@ -302,7 +302,6 @@ section:focus {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   isolation: isolate;
-  overflow: hidden;
   transition: color 0.3s var(--ease-out);
 }
 
@@ -343,7 +342,7 @@ section:focus {
   color: var(--bg);
 }
 
-.btn--primary .btn__glow {
+.btn__glow {
   position: absolute;
   inset: 0;
   z-index: -2;
@@ -408,6 +407,7 @@ section:focus {
 .nav__links a {
   position: relative;
   display: inline-block;
+  white-space: nowrap;
   padding-block: 14px;
   color: var(--subtle);
   transition: color 0.25s;
@@ -468,8 +468,20 @@ section:focus {
     font-size: 12px;
   }
 
+  .nav__inner {
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
   .nav__links ul {
-    gap: 12px;
+    gap: 10px;
+  }
+
+  .nav__sound {
+    padding: 5px 6px;
+    font-size: 10px;
+    letter-spacing: 0.02em;
   }
 }
 

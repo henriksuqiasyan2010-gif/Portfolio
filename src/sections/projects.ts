@@ -16,7 +16,6 @@ export function initProjects() {
   if (!filters || !modal) return
 
   filters.hidden = false
-  ScrollTrigger.refresh()
 
   // ---------- фильтр ----------
   let current = 'all'
@@ -115,6 +114,8 @@ export function initProjects() {
     if (!project || modal.open) return
     opener = from
     render(project)
+    // заголовок существует только пока окно открыто, поэтому ссылка на него ставится здесь
+    modal.setAttribute('aria-labelledby', 'modal-title')
     modal.showModal()
     document.documentElement.classList.add('is-locked')
     bus.emit('ui:open')

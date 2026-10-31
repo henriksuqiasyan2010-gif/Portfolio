@@ -216,7 +216,7 @@ function footer(c: Content) {
 
 function modal(c: Content) {
   return `
-  <dialog class="modal" id="project-modal" aria-labelledby="modal-title">
+  <dialog class="modal" id="project-modal">
     <div class="modal__panel">
       <button class="modal__close" type="button" data-close autofocus>[ ${esc(c.projects.close)} ]</button>
       <div class="modal__content"></div>

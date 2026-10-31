@@ -13,8 +13,30 @@ function contentHtml(): Plugin {
   }
 }
 
+// В сборке весь CSS (~6 KB gzip) встраивается в <head>: на медленной сети это минус один
+// блокирующий запрос перед первой отрисовкой.
+function inlineCss(): Plugin {
+  return {
+    name: 'inline-css',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, ctx) {
+        for (const [file, asset] of Object.entries(ctx.bundle ?? {})) {
+          if (asset.type !== 'asset' || !file.endsWith('.css')) continue
+          const link = new RegExp(`<link rel="stylesheet"[^>]*href="/${file.replace(/[.]/g, '\\.')}"[^>]*>`)
+          if (!link.test(html)) continue
+          html = html.replace(link, () => `<style>${String(asset.source)}</style>`)
+          delete ctx.bundle![file]
+        }
+        return html
+      },
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [contentHtml()],
+  plugins: [contentHtml(), inlineCss()],
   build: {
     target: 'es2020',
     cssMinify: true,

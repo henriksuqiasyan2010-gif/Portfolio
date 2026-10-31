@@ -93,6 +93,24 @@
   margin-top: 44px;
 }
 
+@media (max-width: 559px) {
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: 16px 22px;
+  }
+
+  .stat__label {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+  }
+
+  .hero__cta .btn {
+    flex: 1 1 100%;
+  }
+}
+
 .hero__scroll {
   position: absolute;
   left: 50%;
