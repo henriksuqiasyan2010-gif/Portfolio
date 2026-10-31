@@ -6,8 +6,12 @@ import { runIntro } from './intro/intro'
 import { initHero } from './sections/hero'
 import { initAbout } from './sections/about'
 import { initReveals } from './sections/reveal'
+import { initProjects } from './sections/projects'
+import { initContact } from './sections/contact'
 import { initNav } from './ui/nav'
 import { initPointer } from './ui/pointer'
+import { initCursor } from './ui/cursor'
+import { initConsoleTrigger, initSound } from './ui/controls'
 import type { GLApi } from './gl/renderer'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -21,7 +25,12 @@ initPointer()
 initNav()
 const hero = initHero()
 initAbout()
+initProjects()
+initContact()
 initReveals()
+initCursor()
+initSound()
+initConsoleTrigger()
 
 void runIntro((afterIntro) => hero.reveal(afterIntro))
 

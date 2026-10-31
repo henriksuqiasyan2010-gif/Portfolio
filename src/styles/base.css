@@ -60,6 +60,8 @@
 }
 
 html {
+  /* место под полосу прокрутки зарезервировано: блокировка скролла под модалкой не сдвигает страницу */
+  scrollbar-gutter: stable;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   background: var(--bg);
@@ -142,6 +144,23 @@ kbd {
   color: var(--accent);
   font: inherit;
   text-align: center;
+}
+
+html.is-locked {
+  overflow: hidden;
+}
+
+.kbd-btn {
+  min-width: 1.9em;
+  padding: 0 0.45em;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  color: var(--accent);
+  font: inherit;
+}
+
+.kbd-btn:hover {
+  border-color: var(--accent);
 }
 
 [hidden] {

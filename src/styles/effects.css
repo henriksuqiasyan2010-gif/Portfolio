@@ -487,3 +487,137 @@ html.intro-on .intro {
   border-color: var(--neon-green);
   color: var(--neon-green);
 }
+
+/* ---------- консоль ~ ---------- */
+
+.console {
+  width: min(100% - 32px, 760px);
+  max-width: none;
+  height: min(70vh, 560px);
+  max-height: none;
+  padding: 0;
+  border: 1px solid rgb(var(--accent-rgb) / 0.55);
+  background: rgb(10 10 16 / 0.97);
+  color: var(--text);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.6),
+    0 0 80px rgb(var(--accent-rgb) / 0.14);
+  font-size: 14px;
+  overflow: hidden;
+}
+
+.console[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.console::backdrop {
+  background: rgb(4 4 8 / 0.7);
+}
+
+.console__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding-inline: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.console__bar span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--magenta);
+}
+
+.console__bar span:nth-child(2) {
+  background: var(--amber);
+}
+
+.console__bar span:nth-child(3) {
+  background: var(--neon-green);
+}
+
+.console__bar b {
+  margin-inline: auto;
+  color: var(--subtle);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.console__close {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  padding: 2px 6px;
+  color: var(--subtle);
+  font-size: 12px;
+}
+
+.console__close:hover {
+  color: var(--accent);
+}
+
+.console__out {
+  flex: 1;
+  padding: 14px 18px 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  line-height: 1.6;
+}
+
+.console__out p {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.console__line {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 18px 16px;
+}
+
+.console__prompt {
+  flex: none;
+  color: var(--accent);
+}
+
+.console__line input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  caret-color: var(--accent);
+}
+
+.c-acc {
+  color: var(--accent);
+}
+
+.c-ok {
+  color: var(--neon-green);
+}
+
+.c-mut {
+  color: var(--subtle);
+}
+
+.c-err {
+  color: var(--magenta);
+}
+
+@media (max-width: 559px) {
+  .console__prompt {
+    max-width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
