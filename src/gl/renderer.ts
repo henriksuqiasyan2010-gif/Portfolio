@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { $, bus, state, type QualityLevel } from '../state'
 import { FpsMonitor, LEVELS, ORDER, detectLevel, gpuName } from './quality'
 import { Particles, smoothstep } from './particles'
+import { Eye, type EyeSlot } from './eye'
 
 export interface Frame {
   dt: number
@@ -43,23 +44,40 @@ export function startGL(canvas: HTMLCanvasElement): GLApi {
   let level = detectLevel(gpu, state.touch)
   state.quality = level
 
+  renderer.autoClear = false
+
   const particles = new Particles(LEVELS[level].particles)
+  const eye = new Eye(LEVELS[level])
   const monitor = new FpsMonitor(() => {
     const i = ORDER.indexOf(level)
     if (i > 0) api.setLevel(ORDER[i - 1])
   })
 
   const hero = $('#hero')!
+  const slotEl = $('#eye-slot')!
   const frame: Frame = { dt: 0, time: 0, width: 1, height: 1, scrollY: 0 }
+  const slot: EyeSlot = { x: 0, y: 0, size: 1 }
   let heroH = 1
+  let slotTop = 0
+  let slotLeft = 0
   let needsResize = true
   let dirty = true
   let lost = false
   let shown = false
   let idle = false
 
+  // offsetTop/offsetLeft не зависят от transform, которым анимируется появление слота
   const measure = () => {
     heroH = hero.offsetHeight || window.innerHeight
+    let top = 0
+    let left = 0
+    for (let el: HTMLElement | null = slotEl; el; el = el.offsetParent as HTMLElement | null) {
+      top += el.offsetTop
+      left += el.offsetLeft
+    }
+    slotTop = top
+    slotLeft = left
+    slot.size = slotEl.offsetWidth || 1
   }
 
   const resize = () => {
@@ -70,6 +88,7 @@ export function startGL(canvas: HTMLCanvasElement): GLApi {
     frame.width = w
     frame.height = h
     particles.resize(w, h)
+    eye.setSize(renderer.domElement.width, renderer.domElement.height)
     measure()
     needsResize = false
     dirty = true
@@ -91,16 +110,29 @@ export function startGL(canvas: HTMLCanvasElement): GLApi {
 
     const warp = state.reduced ? 0 : smoothstep(0.08, 0.9, frame.scrollY / heroH)
     const particlesVisible = frame.scrollY < heroH * 0.98
-    if (!particlesVisible) {
+    const top = slotTop - frame.scrollY
+    const eyeVisible = top < frame.height + 60 && top + slot.size > -60
+    if (!particlesVisible && !eyeVisible) {
       setIdle(true)
       return
     }
     setIdle(false)
 
-    // reduced motion: поле статично, кадр перерисовывается только при изменениях
-    if (state.reduced && !dirty) return
-    particles.update(frame, warp)
-    renderer.render(particles.scene, particles.camera)
+    // reduced motion: поле статично, кадр перерисовывается только при изменениях; глаз двигается медленно
+    if (state.reduced && !dirty && !eyeVisible) return
+    renderer.clear()
+    if (particlesVisible) {
+      particles.update(frame, warp)
+      particles.render(renderer)
+    }
+    if (eyeVisible) {
+      slot.x = slotLeft + slot.size / 2
+      slot.y = top + slot.size / 2
+      const assemble = state.reduced ? 1 : smoothstep(0, 1, (frame.height - top) / (frame.height * 0.62))
+      eye.update(frame, slot, assemble)
+      renderer.clearDepth()
+      eye.render(renderer)
+    }
     dirty = false
     monitor.frame(dt)
 
@@ -154,6 +186,7 @@ export function startGL(canvas: HTMLCanvasElement): GLApi {
       level = next
       state.quality = next
       particles.setCount(LEVELS[next].particles)
+      eye.setQuality(LEVELS[next])
       needsResize = true
       monitor.hold(2)
       bus.emit('quality', next)
